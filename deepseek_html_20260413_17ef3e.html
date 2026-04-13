@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>OZON 定价 · 渠道优选</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      font-family: system-ui, 'Segoe UI', 'Inter', Roboto, sans-serif;
+    }
+    body {
+      background: #f2f5f9;
+      padding: 20px 16px;
+      display: flex;
+      justify-content: center;
+    }
+    .card {
+      max-width: 1000px;
+      width: 100%;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0,0,0,0.02);
+      padding: 28px 28px 32px;
+    }
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+      color: #0a1c2f;
+      margin-bottom: 6px;
+    }
+    .subhead {
+      color: #4f6f8f;
+      font-weight: 450;
+      margin-bottom: 28px;
+      border-left: 4px solid #2a7de1;
+      padding-left: 16px;
+      font-size: 1rem;
+    }
+    .params-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    @media (max-width: 720px) {
+      .params-grid { grid-template-columns: 1fr; }
+    }
+    .param-block {
+      background: #fafcff;
+      border-radius: 18px;
+      padding: 18px 18px 14px;
+      border: 1px solid #e7edf6;
+    }
+    .param-block h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1a3650;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .input-item {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 16px;
+    }
+    .input-item label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #3e5f7e;
+      margin-bottom: 5px;
+    }
+    .input-item input {
+      background: white;
+      border: 1.5px solid #d4dfec;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #0b1e3a;
+      transition: 0.15s;
+    }
+    .input-item input:focus {
+      border-color: #2a7de1;
+      box-shadow: 0 0 0 3px rgba(42, 125, 225, 0.12);
+      outline: none;
+    }
+    .input-item input[type="number"] { -moz-appearance: textfield; }
+    .input-item input[type="number"]::-webkit-outer-spin-button,
+    .input-item input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .unit-hint { font-size: 0.75rem; color: #6a85a3; margin-top: 4px; }
+    .results-section { background: #ffffff; border-radius: 22px; padding: 8px 0 0; margin-top: 8px; }
+    .price-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin: 12px 0 22px;
+    }
+    .price-card {
+      background: #fbfdff;
+      border-radius: 20px;
+      padding: 20px 18px;
+      border: 1px solid #e3eaf3;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .price-tag {
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      color: #1f4a7a;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+    .price-cny { font-size: 2.3rem; font-weight: 700; color: #0c253c; line-height: 1.2; margin-bottom: 6px; }
+    .price-rub { font-size: 1.5rem; font-weight: 600; color: #1f6eb0; margin-bottom: 6px; }
+    .price-label-small {
+      font-size: 0.8rem;
+      color: #5f7f9e;
+      border-top: 1px dashed #cbdae9;
+      padding-top: 10px;
+      margin-top: 8px;
+    }
+    .channel-footer {
+      background: #eef4fb;
+      border-radius: 60px;
+      padding: 14px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      border: 1px solid #d0e0f0;
+      margin: 8px 0 6px;
+    }
+    .channel-name { font-weight: 700; font-size: 1.2rem; color: #103450; }
+    .channel-detail { color: #1f5a8e; font-weight: 500; }
+    .footnote {
+      font-size: 0.85rem;
+      color: #416183;
+      margin-top: 18px;
+      padding: 0 4px;
+    }
+    .warning-msg {
+      background: #fff5e6;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-size: 0.9rem;
+      color: #aa5a00;
+    }
+    hr { border: none; border-top: 1px solid #d6e2ef; margin: 18px 0 8px; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>📦 OZON 定价·渠道优选</h1>
+  <div class="subhead">根据重量、成本及售价自动匹配最经济渠道。核心参数突出，整体布局更紧凑。</div>
+
+  <div class="params-grid">
+    <!-- 商品基础 -->
+    <div class="param-block">
+      <h3>📋 商品基础</h3>
+      <div class="input-item">
+        <label>采购单价 (元/件)</label>
+        <input type="number" id="purchasePrice" value="20.00" step="0.01" min="0" lang="en">
+      </div>
+      <div class="input-item">
+        <label>采购数量</label>
+        <input type="number" id="quantity" value="1" step="1" min="1" lang="en">
+      </div>
+      <div class="input-item">
+        <label>克重 (G)</label>
+        <input type="number" id="weightG" value="200" step="1" min="0" lang="en">
+        <div class="unit-hint">0g ~ 40kg</div>
+      </div>
+      <div class="input-item">
+        <label>汇率 (RUB/CNY)</label>
+        <input type="number" id="exchangeRate" value="11.25" step="0.01" min="0.1" lang="en">
+      </div>
+    </div>
+
+    <!-- 成本费率 % -->
+    <div class="param-block">
+      <h3>📉 成本费率 %</h3>
+      <div class="input-item">
+        <label>退换率 %</label>
+        <input type="number" id="lossRate" value="5.0" step="0.1" min="0" max="100" lang="en">
+      </div>
+      <div class="input-item">
+        <label>佣金率 %</label>
+        <input type="number" id="commissionRate" value="12.0" step="0.1" min="0" max="100" lang="en">
+      </div>
+      <div class="input-item">
+        <label>广告占比 %</label>
+        <input type="number" id="adRate" value="5.0" step="0.1" min="0" max="100" lang="en">
+      </div>
+      <div style="margin-top: 12px; background: #eef2f8; border-radius: 16px; padding: 12px 14px;">
+        <div style="font-size:0.9rem; color:#2b4e6e;">📌 固定费用 2.50 元</div>
+        <div style="font-size:0.8rem; color:#54738f; margin-top:6px;">公式: (采购+物流+2.5) / (1-费率-利润率)</div>
+      </div>
+    </div>
+
+    <!-- 目标利润率 % -->
+    <div class="param-block">
+      <h3>🎯 目标利润率 %</h3>
+      <div class="input-item">
+        <label>售价利润率 %</label>
+        <input type="number" id="profitSale" value="20.0" step="0.5" min="0" max="99" lang="en">
+      </div>
+      <div class="input-item">
+        <label>最低价利润率 %</label>
+        <input type="number" id="profitMin" value="10.0" step="0.5" min="0" max="99" lang="en">
+      </div>
+      <div class="input-item">
+        <label>售前价利润率 %</label>
+        <input type="number" id="profitPre" value="50.0" step="0.5" min="0" max="99" lang="en">
+      </div>
+      <div style="margin-top: 18px; color:#38658f; font-size:0.9rem; border-left: 3px solid #2a7de1; padding-left: 12px;">
+        自动匹配六条URAL渠道<br>取最低物流费渠道
+      </div>
+    </div>
+  </div>
+
+  <!-- 结果展示区 -->
+  <div class="results-section">
+    <div class="price-cards">
+      <div class="price-card">
+        <div class="price-tag">🔻 最低价 MIN</div>
+        <div class="price-cny" id="minPriceCNY">¥46.62</div>
+        <div class="price-rub" id="minPriceRUB">₽524.45</div>
+        <div class="price-label-small">人民币 CNY · 卢布 RUB</div>
+      </div>
+      <div class="price-card" style="border:2px solid #cde0f5; background:#ffffff;">
+        <div class="price-tag">⭐ 售价 REGULAR</div>
+        <div class="price-cny" id="salePriceCNY">¥54.66</div>
+        <div class="price-rub" id="salePriceRUB">₽614.87</div>
+        <div class="price-label-small">人民币 CNY · 卢布 RUB</div>
+      </div>
+      <div class="price-card">
+        <div class="price-tag">📈 售前价 PRE</div>
+        <div class="price-cny" id="prePriceCNY">¥113.21</div>
+        <div class="price-rub" id="prePriceRUB">₽1273.66</div>
+        <div class="price-label-small">人民币 CNY · 卢布 RUB</div>
+      </div>
+    </div>
+
+    <div class="channel-footer" id="channelFooter">
+      <span class="channel-name" id="selectedChannelDisplay">URAL 超小件低客单 (ID 2048)</span>
+      <span class="channel-detail" id="logisticsDetail">物流费 10.20 元 | 售价 56.38 CNY ≈ 634.28 RUB</span>
+    </div>
+    <div id="warningMsg" style="margin-top: 10px;"></div>
+    <div class="footnote">
+      ✅ 渠道选择：重量范围 + 售价在客单价内。多个渠道符合时取售价（人民币）最低。<br>
+      📐 固定费用2.5元已计入公式。尺寸限制（三边之和/最长边）请务必人工核对。
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // 渠道定义 —— 已修正 2048 的物流费为 2.92 + 36.4 元/kg
+    const CHANNELS = [
+      { id: 2048, name: 'URAL 超小件低客单', baseFee: 2.92, perKgFee: 36.4, weightMinG: 0, weightMaxG: 800, priceMin: 0, priceMax: 135.00 },
+      { id: 2144, name: 'URAL 非超小件低客单', baseFee: 23.92, perKgFee: 26.0, weightMinG: 801, weightMaxG: 25000, priceMin: 0, priceMax: 135.00 },
+      { id: 2145, name: 'URAL 轻小件中客单', baseFee: 16.64, perKgFee: 36.4, weightMinG: 0, weightMaxG: 2000, priceMin: 135.01, priceMax: 635.00 },
+      { id: 2146, name: 'URAL 大件中客单', baseFee: 37.44, perKgFee: 26.0, weightMinG: 2000, weightMaxG: 40000, priceMin: 135.01, priceMax: 635.00 },
+      { id: 2558, name: 'URAL 高级版小件', baseFee: 22.88, perKgFee: 36.4, weightMinG: 0, weightMaxG: 5000, priceMin: 635.01, priceMax: 22525.00 },
+      { id: 2559, name: 'URAL 高级版大件', baseFee: 64.48, perKgFee: 29.12, weightMinG: 5000.1, weightMaxG: 40000, priceMin: 635.01, priceMax: 22525.00 }
+    ];
+
+    const purchasePriceInp = document.getElementById('purchasePrice');
+    const quantityInp = document.getElementById('quantity');
+    const weightInp = document.getElementById('weightG');
+    const exchangeInp = document.getElementById('exchangeRate');
+    const lossInp = document.getElementById('lossRate');
+    const commissionInp = document.getElementById('commissionRate');
+    const adInp = document.getElementById('adRate');
+    const profitSaleInp = document.getElementById('profitSale');
+    const profitMinInp = document.getElementById('profitMin');
+    const profitPreInp = document.getElementById('profitPre');
+
+    const minCNY = document.getElementById('minPriceCNY');
+    const minRUB = document.getElementById('minPriceRUB');
+    const saleCNY = document.getElementById('salePriceCNY');
+    const saleRUB = document.getElementById('salePriceRUB');
+    const preCNY = document.getElementById('prePriceCNY');
+    const preRUB = document.getElementById('prePriceRUB');
+    const selectedChannelSpan = document.getElementById('selectedChannelDisplay');
+    const logisticsDetailSpan = document.getElementById('logisticsDetail');
+    const warningDiv = document.getElementById('warningMsg');
+
+    function getFloat(id, def = 0) {
+      const el = document.getElementById(id);
+      if (!el) return def;
+      const v = parseFloat(el.value);
+      return isNaN(v) ? def : v;
+    }
+
+    function calcLogisticsFee(ch, weightKg) {
+      return ch.baseFee + ch.perKgFee * weightKg;
+    }
+
+    function computePrice(totalCost, loss, comm, ad, profit) {
+      const denom = 1 - (loss/100) - (comm/100) - (ad/100) - (profit/100);
+      if (denom <= 0.0001) return Infinity;
+      return totalCost / denom;
+    }
+
+    function isChannelValid(ch, weightG, sellingPrice) {
+      if (weightG < ch.weightMinG || weightG > ch.weightMaxG) return false;
+      const p = sellingPrice;
+      if (ch.priceMin === 0 && ch.priceMax === 135.00) return p >= 0 && p <= 135.00;
+      if (ch.priceMin === 135.01) return p >= 135.01 && p <= 635.00;
+      if (ch.priceMin === 635.01) return p >= 635.01 && p <= 22525.00;
+      return p >= ch.priceMin && p <= ch.priceMax;
+    }
+
+    function recalculate() {
+      const purchasePrice = getFloat('purchasePrice', 0);
+      const quantity = getFloat('quantity', 1);
+      const weightG = getFloat('weightG', 0);
+      const exchange = getFloat('exchangeRate', 11.25);
+      const loss = getFloat('lossRate', 5);
+      const comm = getFloat('commissionRate', 12);
+      const ad = getFloat('adRate', 5);
+      const profitSale = getFloat('profitSale', 20);
+      const profitMin = getFloat('profitMin', 10);
+      const profitPre = getFloat('profitPre', 50);
+
+      const purchaseTotal = purchasePrice * quantity;
+      const weightKg = weightG / 1000;
+      const FIXED = 2.5;
+
+      if (weightG < 0 || purchasePrice < 0 || quantity <= 0) {
+        selectedChannelSpan.textContent = '⚠️ 输入无效';
+        logisticsDetailSpan.textContent = '';
+        minCNY.textContent = '¥0.00'; minRUB.textContent = '₽0.00';
+        saleCNY.textContent = '¥0.00'; saleRUB.textContent = '₽0.00';
+        preCNY.textContent = '¥0.00'; preRUB.textContent = '₽0.00';
+        warningDiv.innerHTML = '<span style="color:#b52b2b;">请填写有效正数</span>';
+        return;
+      }
+
+      const candidates = [];
+      for (let ch of CHANNELS) {
+        const logistics = calcLogisticsFee(ch, weightKg);
+        const totalCost = purchaseTotal + logistics + FIXED;
+        const salePriceCand = computePrice(totalCost, loss, comm, ad, profitSale);
+        if (!isFinite(salePriceCand) || salePriceCand <= 0) continue;
+        if (isChannelValid(ch, weightG, salePriceCand)) {
+          candidates.push({ channel: ch, logisticsFee: logistics, salePrice: salePriceCand });
+        }
+      }
+
+      if (candidates.length === 0) {
+        selectedChannelSpan.textContent = '❌ 无匹配渠道';
+        logisticsDetailSpan.textContent = '';
+        minCNY.textContent = '—'; minRUB.textContent = '₽—';
+        saleCNY.textContent = '—'; saleRUB.textContent = '₽—';
+        preCNY.textContent = '—'; preRUB.textContent = '₽—';
+        warningDiv.innerHTML = '<span class="warning-msg">当前重量/售价超出所有渠道范围，请调整参数</span>';
+        return;
+      }
+
+      candidates.sort((a,b) => a.logisticsFee - b.logisticsFee);
+      const best = candidates[0];
+      const ch = best.channel;
+      const logistics = best.logisticsFee;
+      const totalCostFinal = purchaseTotal + logistics + FIXED;
+
+      const saleFinal = computePrice(totalCostFinal, loss, comm, ad, profitSale);
+      const minFinal = computePrice(totalCostFinal, loss, comm, ad, profitMin);
+      const preFinal = computePrice(totalCostFinal, loss, comm, ad, profitPre);
+
+      const safeSale = isFinite(saleFinal) ? saleFinal : 0;
+      const safeMin = isFinite(minFinal) ? minFinal : 0;
+      const safePre = isFinite(preFinal) ? preFinal : 0;
+
+      minCNY.textContent = `¥${safeMin.toFixed(2)}`;
+      minRUB.textContent = `₽${(safeMin * exchange).toFixed(2)}`;
+      saleCNY.textContent = `¥${safeSale.toFixed(2)}`;
+      saleRUB.textContent = `₽${(safeSale * exchange).toFixed(2)}`;
+      preCNY.textContent = `¥${safePre.toFixed(2)}`;
+      preRUB.textContent = `₽${(safePre * exchange).toFixed(2)}`;
+
+      selectedChannelSpan.textContent = `${ch.name} (ID ${ch.id})`;
+      const rubSale = safeSale * exchange;
+      logisticsDetailSpan.textContent = `物流费 ${logistics.toFixed(2)} 元 | 售价 ${safeSale.toFixed(2)} CNY ≈ ${rubSale.toFixed(2)} RUB`;
+
+      const denom = 1 - loss/100 - comm/100 - ad/100 - profitSale/100;
+      if (denom <= 0.05) {
+        warningDiv.innerHTML = '<span style="color:#b85e00; background:#fff1e0; padding:6px 16px; border-radius:30px;">⚠️ 费率+利润率过高，售价可能异常</span>';
+      } else {
+        warningDiv.innerHTML = candidates.length > 1 ? 
+          `<span style="color:#1f6e4a;">📊 另有 ${candidates.length-1} 个可用渠道，已选最低物流费</span>` : '';
+      }
+    }
+
+    const inputIds = ['purchasePrice','quantity','weightG','exchangeRate','lossRate','commissionRate','adRate','profitSale','profitMin','profitPre'];
+    inputIds.forEach(id => document.getElementById(id).addEventListener('input', recalculate));
+    recalculate();
+  })();
+</script>
+</body>
+</html>
