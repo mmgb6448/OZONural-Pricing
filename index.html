@@ -199,9 +199,13 @@
         <label>广告占比 %</label>
         <input type="number" id="adRate" value="5.0" step="0.1" min="0" max="100" lang="en">
       </div>
+      <div class="input-item">
+        <label>固定费率 %</label>
+        <input type="number" id="fixedRate" value="4.0" step="0.1" min="0" max="100" lang="en">
+      </div>
       <div style="margin-top: 12px; background: #eef2f8; border-radius: 16px; padding: 12px 14px;">
         <div style="font-size:0.9rem; color:#2b4e6e;">📌 固定费用 2.50 元</div>
-        <div style="font-size:0.8rem; color:#54738f; margin-top:6px;">公式: (采购+物流+2.5) / (1-费率-利润率)</div>
+        <div style="font-size:0.8rem; color:#54738f; margin-top:6px;">公式: (采购+物流+2.5) / (1-退换率-佣金率-广告占比-固定费率-利润率)</div>
       </div>
     </div>
 
@@ -256,7 +260,7 @@
     <div id="warningMsg" style="margin-top: 10px;"></div>
     <div class="footnote">
       ✅ 渠道选择：重量范围 + 售价在客单价内。多个渠道符合时取售价（人民币）最低。<br>
-      📐 固定费用2.5元已计入公式。尺寸限制（三边之和/最长边）请务必人工核对。
+      📐 固定费用与固定费率已计入公式。尺寸限制（三边之和/最长边）请务必人工核对。
     </div>
   </div>
 </div>
@@ -307,8 +311,8 @@
       return ch.baseFee + ch.perKgFee * weightKg;
     }
 
-    function computePrice(totalCost, loss, comm, ad, profit) {
-      const denom = 1 - (loss/100) - (comm/100) - (ad/100) - (profit/100);
+    function computePrice(totalCost, loss, comm, ad, fixedRate, profit) {
+      const denom = 1 - (loss/100) - (comm/100) - (ad/100) - (fixedRate/100) - (profit/100);
       if (denom <= 0.0001) return Infinity;
       return totalCost / denom;
     }
@@ -330,6 +334,7 @@
       const loss = getFloat('lossRate', 5);
       const comm = getFloat('commissionRate', 12);
       const ad = getFloat('adRate', 5);
+      const fixedRate = getFloat('fixedRate', 4);
       const profitSale = getFloat('profitSale', 20);
       const profitMin = getFloat('profitMin', 10);
       const profitPre = getFloat('profitPre', 50);
@@ -352,7 +357,7 @@
       for (let ch of CHANNELS) {
         const logistics = calcLogisticsFee(ch, weightKg);
         const totalCost = purchaseTotal + logistics + FIXED;
-        const salePriceCand = computePrice(totalCost, loss, comm, ad, profitSale);
+        const salePriceCand = computePrice(totalCost, loss, comm, ad, fixedRate, profitSale);
         if (!isFinite(salePriceCand) || salePriceCand <= 0) continue;
         if (isChannelValid(ch, weightG, salePriceCand)) {
           candidates.push({ channel: ch, logisticsFee: logistics, salePrice: salePriceCand });
@@ -375,9 +380,9 @@
       const logistics = best.logisticsFee;
       const totalCostFinal = purchaseTotal + logistics + FIXED;
 
-      const saleFinal = computePrice(totalCostFinal, loss, comm, ad, profitSale);
-      const minFinal = computePrice(totalCostFinal, loss, comm, ad, profitMin);
-      const preFinal = computePrice(totalCostFinal, loss, comm, ad, profitPre);
+      const saleFinal = computePrice(totalCostFinal, loss, comm, ad, fixedRate, profitSale);
+      const minFinal = computePrice(totalCostFinal, loss, comm, ad, fixedRate, profitMin);
+      const preFinal = computePrice(totalCostFinal, loss, comm, ad, fixedRate, profitPre);
 
       const safeSale = isFinite(saleFinal) ? saleFinal : 0;
       const safeMin = isFinite(minFinal) ? minFinal : 0;
@@ -394,7 +399,7 @@
       const rubSale = safeSale * exchange;
       logisticsDetailSpan.textContent = `物流费 ${logistics.toFixed(2)} 元 | 售价 ${safeSale.toFixed(2)} CNY ≈ ${rubSale.toFixed(2)} RUB`;
 
-      const denom = 1 - loss/100 - comm/100 - ad/100 - profitSale/100;
+      const denom = 1 - loss/100 - comm/100 - ad/100 - fixedRate/100 - profitSale/100;
       if (denom <= 0.05) {
         warningDiv.innerHTML = '<span style="color:#b85e00; background:#fff1e0; padding:6px 16px; border-radius:30px;">⚠️ 费率+利润率过高，售价可能异常</span>';
       } else {
@@ -403,7 +408,7 @@
       }
     }
 
-    const inputIds = ['purchasePrice','quantity','weightG','exchangeRate','lossRate','commissionRate','adRate','profitSale','profitMin','profitPre'];
+    const inputIds = ['purchasePrice','quantity','weightG','exchangeRate','lossRate','commissionRate','adRate','fixedRate','profitSale','profitMin','profitPre'];
     inputIds.forEach(id => document.getElementById(id).addEventListener('input', recalculate));
     recalculate();
   })();
